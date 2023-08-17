@@ -24,18 +24,19 @@ WORKDIR /data
 COPY --from=build /opt/minecraft/purpur.jar /opt/minecraft/purpur.jar
 COPY --from=build /usr/local/bin/rcon-cli /usr/local/bin/rcon-cli
 
-# Volumes for the external data (Server, World, Config...)
+# Volumes for the external data
 VOLUME "/data"
 
 # Expose minecraft port
 EXPOSE 25565/tcp
-EXPOSE 25565/udp
+# TCP port
+EXPOSE 25575/tcp
 
 # Set memory size
 ARG memory_size=1G
 ENV MEMORYSIZE=$memory_size
 
-#Set Puferfish Flags or other that is frist then -jar
+#Set Puferfish flags or other that is frist then -jar
 ARG overade_flags="--add-modules=jdk.incubator.vector"
 ENV OVERADEFLAGS=$overade_flags
 
