@@ -40,8 +40,6 @@ VOLUME "/data"
 
 # Main Port
 EXPOSE 25565/tcp
-# Rcon Port
-EXPOSE 25575/tcp
 
 # Memory size
 ARG memory_size=1G
