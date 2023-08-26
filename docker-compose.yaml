@@ -2,56 +2,17 @@ version: "3"
 #stop using root as default... Just set up bases as root and use only user account!
 services:
   minecraft:
-    image: "towinok/purpur:1.20.1"
+    image: "towinok/purpurmain:latest"
     restart: always
     container_name: "purpur"
     environment:
-      MEMORYSIZE: "12G"
-      JAVAFLAGS: "-Djava.awt.headless=true -Dterminal.jline=false -Dterminal.ansi=true -XX:+UseZGC -XX:ConcGCThreads=8 -XX:MaxGCPauseMillis=20 -XX:ActiveProcessorCount=8 -XX:+UseNUMA -XX:+AlwaysPreTouch -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+PerfDisableSharedMem -XX:InitiatingHeapOccupancyPercent=20 -Dcom.mojang.eula.agree=true"
+      MEMORYSIZE: "1G"
     cpus: 8.0
     mem_limit: 14746M
     volumes:
       - "/path/to/purpur_data:/data:rw"
     ports:
       - "25565:25565/tcp"
-      - "25565:25565/udp"
-      - "24454:24454/udp"
     stdin_open: true
     tty: true
-    depends_on:
-      - purpur_db
-      - purpur_adminer
-    healthcheck:
-      test: ["CMD-SHELL", "nc -z -v -w5 purpur_db 3306"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
 
-  db:
-    container_name: "purpur_db"
-    image: "lscr.io/linuxserver/mariadb:latest"
-    restart: always
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=""
-      - MYSQL_ROOT_PASSWORD=myrootpassword
-      - MYSQL_USER=mydbuser
-      - MYSQL_PASSWORD=mydbpassword
-    volumes:
-      - "/path/to/db_data:/config"
-    ports:
-      - "3306:3306"
-    cpus: 1.0
-    mem_limit: 1844M
-      
-  adminer:
-    container_name: "purpur_adminer"
-    image: "adminer"
-    restart: always
-    ports:
-      - "25555:8080"
-    cpus: 0.5
-    mem_limit: 820M
-    depends_on:
-      - db

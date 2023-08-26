@@ -1,7 +1,8 @@
-FROM eclipse-temurin:19-jre AS build
-RUN apt-get update && \
-    apt-get install -y curl jq gosu && \
-    rm -rf /var/lib/apt/lists/*
+# Build stage
+FROM eclipse-temurin:19-jre-alpine AS build
+RUN apk update && \
+    apk add curl jq && \
+    rm -rf /var/cache/apk/*
 
 LABEL Minecraft PurpurMC server
 
@@ -12,15 +13,16 @@ COPY ./getminecraft.sh /
 RUN chmod +x /getminecraft.sh
 RUN /getminecraft.sh $version
 
+
 #Running environment
-FROM eclipse-temurin:19-jre AS runtime
+FROM eclipse-temurin:20-jre-alpine AS runtime
 ARG TARGETARCH
-# Install gosu
+# Download and copy the gosu binary for arm64
 RUN set -eux; \
- apt-get update && \
- apt-get install -y gosu && \
- rm -rf /var/lib/apt/lists/* && \
- gosu nobody true
+    apk add --no-cache curl && \
+    curl -sL https://github.com/tianon/gosu/releases/download/1.16/gosu-amd64 -o /usr/local/bin/gosu && \
+    chmod +x /usr/local/bin/gosu && \
+    gosu nobody true
 
 # Working directory
 WORKDIR /data
@@ -33,7 +35,8 @@ ADD https://github.com/itzg/rcon-cli/releases/download/${RCON_CLI_VER}/rcon-cli_
 RUN mkdir -p /tmp/rcon-cli && \
     tar -x -C /tmp/rcon-cli -f /tmp/rcon-cli.tgz && \
     mv /tmp/rcon-cli/rcon-cli /usr/local/bin/ && \
-    rm -rf /tmp/rcon-cli /tmp/rcon-cli.tgz
+    rm -rf /tmp/rcon-cli /tmp/rcon-cli.tgz && \
+    apk del curl
 
 # Volumes for the external data (Server, World, Config...)
 VOLUME "/data"
@@ -47,27 +50,15 @@ ENV MEMORYSIZE=${memory_size}
 
 # Pufferfish flag
 ARG puffer_flags="--add-modules=jdk.incubator.vector"
-ENV PUFFERFISHFLAGS=${puffer_flags}
-
-# Override flags if you are have it.
-ARG override_flags=""
-ENV OVERRIDEFLAGS=${override_flags}
 
 # Default Aikar's flags
-ARG java_flags="-Dterminal.jline=false -Dterminal.ansi=true -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:InitiatingHeapOccupancyPercent=15 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true -Dcom.mojang.eula.agree=true"
+ARG java_flags="-Djava.awt.headless=true -Dterminal.jline=false -Dterminal.ansi=true -XX:+UseZGC -XX:MaxGCPauseMillis=16 -XX:ActiveProcessorCount=8 -XX:+UseNUMA -XX:+AlwaysPreTouch -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+PerfDisableSharedMem -XX:InitiatingHeapOccupancyPercent=20 -Dcom.mojang.eula.agree=true"
 ENV JAVAFLAGS=${java_flags}
 
-# Set Spigot Flags
-ARG spigot_flags=""
-ENV SPIGOT_FLAGS=${spigot_flags}
+# Set Additional Flags
+ARG add_flags='--nojline -C ./config/commands.yml -S ./config/spigot.yml -b ./config/bukkit.yml -c ./config/server.properties --pufferfish-settings ./config/pufferfish.yml --purpur-settings ./config/purpur.yml --paper-settings-directory ./config/paper/  -d "yyyy-MM-dd HH:mm:ss" --world-dir ./worlds/'
+ENV ADD_FLAGS=${add_flags}
 
-# Set PaperMC Flags
-ARG paper_flags="--nojline"
-ENV PAPER_FLAGS=${paper_flags}
-
-# Set Purpur Flags
-ARG purpur_flags=""
-ENV PURPUR_FLAGS=${purpur_flags}
 
 WORKDIR /data
 
