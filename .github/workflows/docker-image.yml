@@ -22,7 +22,7 @@ jobs:
     - run: echo "tag:${{ steps.tag.outputs.tag }}"
 
     - name: Build Docker image
-      run: docker build -t towinok/purpurmain:forpull .
+      run: docker build -t towinok/purpurmain:latest .
       
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
@@ -39,5 +39,6 @@ jobs:
 
     - name: Push Docker image to GitHub Container Registry
       run: |
-        docker tag towinok/purpurmain:forpull towinok/purpurmain:${{ steps.tag.outputs.tag }}
+        docker push towinok/purpurmain:latest
+        docker tag towinok/purpurmain:latest towinok/purpurmain:${{ steps.tag.outputs.tag }}
         docker push towinok/purpurmain:${{ steps.tag.outputs.tag }}
