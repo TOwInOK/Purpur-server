@@ -15,18 +15,25 @@ jobs:
 
     - name: Build Docker image
       run: docker build -t towinok/purpurmain:${{ github.sha }} .
-      
+
+    - name: Get latest release tag
+      id: get_latest_tag
+      run: echo "::set-output name=tag::$(git describe --abbrev=0 --tags)"
+
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
       with:
         username: towinok
-        password: ${{secrets.D_TOCKEN}}
+        password: ${{ secrets.D_TOCKEN }}
+
     - name: Log in to the Container registry
       uses: docker/login-action@v2
       with:
         registry: ghcr.io
-        username: ${{github.actor}}
-        password: ${{secrets.GITHUB_TOKEN}}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Push Docker image to GitHub Container Registry
-      run: docker push ghcr.io/towinok/purpurmain:${{ github.sha }}
+      run: |
+        docker tag towinok/purpurmain:${{ github.sha }} ghcr.io/towinok/purpurmain:${{ steps.get_latest_tag.outputs.tag }}
+        docker push ghcr.io/towinok/purpurmain:${{ steps.get_latest_tag.outputs.tag }}
