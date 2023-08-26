@@ -32,4 +32,4 @@ jobs:
     - name: Push Docker image to GitHub Container Registry
       run: |
         docker tag towinok/purpurmain:forpull towinok/purpurmain:latest
-        docker push ghcr.io/towinok/purpurmain:latest
+        docker push towinok/purpurmain:latest
