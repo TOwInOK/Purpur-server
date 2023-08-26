@@ -8,10 +8,12 @@ on:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3.2.0
+
+    - uses: TOwInOK/PurpurMain-tag@v1
+      id: get-latest-tag
 
     - name: Build Docker image
       run: docker build -t towinok/purpurmain:forpull .
@@ -28,12 +30,8 @@ jobs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-        
-    - name: Get latest release tag
-      id: get_latest_tag
-      run: echo "tag=$(git describe --abbrev=0 --tags)" >> $GITHUB_STATE
 
     - name: Push Docker image to GitHub Container Registry
       run: |
-        docker tag towinok/purpurmain:forpull towinok/purpurmain:$tag
-        docker push towinok/purpurmain:$tag
+        docker tag towinok/purpurmain:forpull towinok/purpurmain:${{ steps.get-latest-tag.outputs.tag }}
+        docker push towinok/purpurmain:${{ steps.get-latest-tag.outputs.tag }}
