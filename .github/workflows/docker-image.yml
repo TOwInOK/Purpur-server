@@ -17,7 +17,7 @@ jobs:
       run: docker build -t towinok/purpurmain:${{ github.sha }} .
 
     - name: Log in to GitHub Container Registry
-      run: echo "${{ secrets.D_TOCKEN }}" | docker login ghcr.io -u towinok
+      run: docker login ghcr.io -u towinok -p ${{ secrets.D_TOCKEN }}
 
     - name: Push Docker image to GitHub Container Registry
       run: docker push ghcr.io/towinok/purpurmain:${{ github.sha }}
