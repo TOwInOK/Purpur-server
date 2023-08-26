@@ -1,50 +1,80 @@
-FROM openjdk:17-slim AS build
+FROM eclipse-temurin:19-jre AS build
+RUN apt-get update -y && apt-get install -y curl jq
+LABEL Minecraft PurpurMC server
 
-ARG TARGETARCH
+#Version of minecraft
+ARG version=1.20.1
 
-ENV PURPURSPIGOT_CI_URL=https://api.purpurmc.org/v2/purpur/1.20.1/latest/download
-ENV RCON_URL=https://github.com/itzg/rcon-cli/releases/download/1.6.2/rcon-cli_1.6.2_linux_${TARGETARCH}.tar.gz
+#Download minecraft wth API
 
 WORKDIR /opt/minecraft
+COPY ./getminecraft.sh /
+RUN chmod +x /getminecraft.sh
+RUN /getminecraft.sh $version
 
-# Download purpurclip
-ADD ${PURPURSPIGOT_CI_URL} purpur.jar
-
-# Install and run rcon
-ADD ${RCON_URL} /tmp/rcon-cli.tgz
-RUN tar -x -C /usr/local/bin -f /tmp/rcon-cli.tgz rcon-cli && \
-  rm /tmp/rcon-cli.tgz
-
-FROM openjdk:17-slim AS runtime
+#Running environment
+FROM eclipse-temurin:19-jre AS runtime
+ARG TARGETARCH
+# Install gosu
+RUN set -eux; \
+ apt-get update; \
+ apt-get install -y gosu; \
+ rm -rf /var/lib/apt/lists/*; \
+# verify that the binary works
+ gosu nobody true
 
 # Working directory
 WORKDIR /data
 
 # Obtain runable jar from build stage
 COPY --from=build /opt/minecraft/purpur.jar /opt/minecraft/purpur.jar
-COPY --from=build /usr/local/bin/rcon-cli /usr/local/bin/rcon-cli
 
-# Volumes for the external data
+#Rcon install
+ARG RCON_CLI_VER=1.6.0
+ADD https://github.com/itzg/rcon-cli/releases/download/${RCON_CLI_VER}/rcon-cli_${RCON_CLI_VER}_linux_${TARGETARCH}.tar.gz /tmp/rcon-cli.tgz
+RUN tar -x -C /usr/local/bin -f /tmp/rcon-cli.tgz rcon-cli && \
+  rm /tmp/rcon-cli.tgz
+
+# Volumes for the external data (Server, World, Config...)
 VOLUME "/data"
 
-# Expose minecraft port
+# Main Port
 EXPOSE 25565/tcp
-# TCP port
+# Rcon Port
 EXPOSE 25575/tcp
 
-# Set memory size
+# Memory size
 ARG memory_size=1G
-ENV MEMORYSIZE=$memory_size
+ENV MEMORYSIZE=${memory_size}
 
-#Set Puferfish flags or other that is frist then -jar
-ARG overade_flags="--add-modules=jdk.incubator.vector"
-ENV OVERADEFLAGS=$overade_flags
+# Pufferfish flag
+ARG puffer_flags="--add-modules=jdk.incubator.vector"
+ENV PUFFERFISHFLAGS=${puffer_flags}
 
-# Set Java Flags
+# Override flags if you are have it.
+ARG override_flags=""
+ENV OVERRIDEFLAGS=${override_flags}
+
+# Default Aikar's flags
 ARG java_flags="-Dterminal.jline=false -Dterminal.ansi=true -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:InitiatingHeapOccupancyPercent=15 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true -Dcom.mojang.eula.agree=true"
-ENV JAVAFLAGS=$java_flags
+ENV JAVAFLAGS=${java_flags}
+
+# Set Spigot Flags
+ARG spigot_flags=""
+ENV SPIGOT_FLAGS=${spigot_flags}
+
+# Set PaperMC Flags
+ARG paper_flags="--nojline"
+ENV PAPER_FLAGS=${paper_flags}
+
+# Set Purpur Flags
+ARG purpur_flags=""
+ENV PURPUR_FLAGS=${purpur_flags}
 
 WORKDIR /data
 
-# Entrypoint with java optimisations
-ENTRYPOINT /usr/local/openjdk-17/bin/java $OVERADEFLAGS -jar -Xms$MEMORYSIZE -Xmx$MEMORYSIZE $JAVAFLAGS /opt/minecraft/purpur.jar --nojline nogui
+COPY /docker-entrypoint.sh /opt/minecraft
+RUN chmod +x /opt/minecraft/docker-entrypoint.sh
+
+# Entrypoint
+ENTRYPOINT ["/opt/minecraft/docker-entrypoint.sh"]
