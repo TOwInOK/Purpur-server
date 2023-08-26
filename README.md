@@ -11,7 +11,7 @@ version: "3"
 
 services:
   minecraft:
-    image: "towinok/purpur-server:1.0"
+    image: "towinok/purpur-server:latest"
     restart: always
     container_name: "purpur"
     environment:

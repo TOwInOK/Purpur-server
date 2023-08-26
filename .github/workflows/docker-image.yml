@@ -8,25 +8,37 @@ on:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3.2.0
+      
+    - name: Find Latest Tag
+      uses: oprypin/find-latest-tag@v1.1.1
+      with:
+        repository: TOwInOK/PurpurMain
+        releases-only: false
+      id: tag
+      
+    - run: echo "tag:${{ steps.tag.outputs.tag }}"
 
     - name: Build Docker image
-      run: docker build -t towinok/purpurmain:${{ github.sha }} .
+      run: docker build -t towinok/purpurmain:latest .
       
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
       with:
         username: towinok
-        password: ${{secrets.D_TOCKEN}}
+        password: ${{ secrets.D_TOCKEN }}
+
     - name: Log in to the Container registry
       uses: docker/login-action@v2
       with:
         registry: ghcr.io
-        username: ${{github.actor}}
-        password: ${{secrets.GITHUB_TOKEN}}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Push Docker image to GitHub Container Registry
-      run: docker push ghcr.io/towinok/purpurmain:${{ github.sha }}
+      run: |
+        docker push towinok/purpurmain:latest
+        docker tag towinok/purpurmain:latest towinok/purpurmain:${{ steps.tag.outputs.tag }}
+        docker push towinok/purpurmain:${{ steps.tag.outputs.tag }}
