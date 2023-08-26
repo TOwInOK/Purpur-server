@@ -1,11 +1,11 @@
 FROM eclipse-temurin:19-jre AS build
-RUN apt-get update -y && apt-get install -y curl jq
+RUN apt-get update && \
+    apt-get install -y curl jq gosu && \
+    rm -rf /var/lib/apt/lists/*
+
 LABEL Minecraft PurpurMC server
 
-#Version of minecraft
 ARG version=1.20.1
-
-#Download minecraft wth API
 
 WORKDIR /opt/minecraft
 COPY ./getminecraft.sh /
@@ -17,23 +17,23 @@ FROM eclipse-temurin:19-jre AS runtime
 ARG TARGETARCH
 # Install gosu
 RUN set -eux; \
- apt-get update; \
- apt-get install -y gosu; \
- rm -rf /var/lib/apt/lists/*; \
-# verify that the binary works
+ apt-get update && \
+ apt-get install -y gosu && \
+ rm -rf /var/lib/apt/lists/* && \
  gosu nobody true
 
 # Working directory
 WORKDIR /data
-
-# Obtain runable jar from build stage
 COPY --from=build /opt/minecraft/purpur.jar /opt/minecraft/purpur.jar
 
 #Rcon install
+ARG TARGETARCH
 ARG RCON_CLI_VER=1.6.0
 ADD https://github.com/itzg/rcon-cli/releases/download/${RCON_CLI_VER}/rcon-cli_${RCON_CLI_VER}_linux_${TARGETARCH}.tar.gz /tmp/rcon-cli.tgz
-RUN tar -x -C /usr/local/bin -f /tmp/rcon-cli.tgz rcon-cli && \
-  rm /tmp/rcon-cli.tgz
+RUN mkdir -p /tmp/rcon-cli && \
+    tar -x -C /tmp/rcon-cli -f /tmp/rcon-cli.tgz && \
+    mv /tmp/rcon-cli/rcon-cli /usr/local/bin/ && \
+    rm -rf /tmp/rcon-cli /tmp/rcon-cli.tgz
 
 # Volumes for the external data (Server, World, Config...)
 VOLUME "/data"
