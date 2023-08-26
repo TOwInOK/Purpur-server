@@ -35,5 +35,5 @@ jobs:
 
     - name: Push Docker image to GitHub Container Registry
       run: |
-        docker tag towinok/purpurmain towinok/purpurmain:${{ state.tag }}
-        docker push ghcr.io/towinok/purpurmain:${{ state.tag }}
+        docker tag towinok/purpurmain towinok/purpurmain:latest
+        docker push ghcr.io/towinok/purpurmain:latest
