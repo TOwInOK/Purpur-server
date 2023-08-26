@@ -2,8 +2,8 @@ name: Build and Publish Docker Image
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - '*'
 
 jobs:
   build-and-publish:
@@ -12,8 +12,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3.2.0
 
-    - uses: TOwInOK/PurpurMain-tag@v1
+    - name: Get Latest Tag
       id: get-latest-tag
+      run: |
+        latest_tag=$(git describe --tags $(git rev-list --tags --max-count=1))
+        echo "Latest tag: $latest_tag"
+        echo "::set-output name=latest_tag::$latest_tag"
 
     - name: Build Docker image
       run: docker build -t towinok/purpurmain:forpull .
@@ -33,5 +37,5 @@ jobs:
 
     - name: Push Docker image to GitHub Container Registry
       run: |
-        docker tag towinok/purpurmain:forpull towinok/purpurmain:${{ steps.get-latest-tag.outputs.tag }}
-        docker push towinok/purpurmain:${{ steps.get-latest-tag.outputs.tag }}
+        docker tag towinok/purpurmain:forpull towinok/purpurmain:${{ steps.get-latest-tag.outputs.latest_tag }}
+        docker push towinok/purpurmain:${{ steps.get-latest-tag.outputs.latest_tag }}
