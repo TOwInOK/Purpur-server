@@ -16,7 +16,7 @@ jobs:
       uses: oprypin/find-latest-tag@v1.1.1
       with:
         repository: TOwInOK/PurpurMain
-        releases-only: true 
+        releases-only: false
       id: tag
       
     - run: echo "tag:${{ steps.tag.outputs.tag }}"
