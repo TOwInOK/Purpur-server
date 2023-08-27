@@ -15,7 +15,7 @@ RUN /getminecraft.sh $version
 
 
 #Running environment
-FROM eclipse-temurin:20-jre-alpine AS runtime
+FROM eclipse-temurin:19-jre-alpine AS runtime
 ARG TARGETARCH
 # Download and copy the gosu binary for arm64
 RUN set -eux; \
