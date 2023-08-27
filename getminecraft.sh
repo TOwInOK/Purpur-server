@@ -12,7 +12,7 @@ echo "------------------------------------------------------------------"
 
 # Construct the download URL
 DOWNLOAD_URL="https://api.purpurmc.org/v2/purpur/${PURPUR_VERSION}/${LATEST_BUILD}/download"
-MD5=$(curl -s "https://api.purpurmc.org/v2/purpur/1.20.1/2044/" | jq -r '.md5')
+MD5=$(curl -s "https://api.purpurmc.org/v2/purpur/${PURPUR_VERSION}/${LATEST_BUILD}/" | jq -r '.md5')
 
 # Download the Purpur server JAR
 curl -s -o purpur.jar "${DOWNLOAD_URL}"
