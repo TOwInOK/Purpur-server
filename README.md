@@ -1,6 +1,6 @@
 # Minecraft Purpur Server Docker Image
 
-This Docker image allows you to run a Minecraft Purpur server in a Docker container.
+This Docker image allows you to run a Minecraft Purpur server into Docker container.
 
 ## Build
 
