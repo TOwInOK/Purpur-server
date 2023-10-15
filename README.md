@@ -44,6 +44,8 @@ services:
       - "25565:25565/tcp"
     stdin_open: true
     tty: true
+
+# if you use it
     depends_on:
       - purpur_db
       - purpur_adminer
