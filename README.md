@@ -31,36 +31,43 @@
 
 ## Как использоать
 
-- Простой запуск через docker
+- Установить [Docker](https://docs.docker.com/engine/install/)
+- Установить [Docker Compose](https://docs.docker.com/compose/install/) (по желанию)
+
+- Простой запуск через docker для версии minecraft 1.20.1
+  ```yml
+  docker run -d \
+    --name purpur \
+    --restart always \
+    -v /path/to/purpur_data:/data:rw \
+    -p 25565:25565/tcp \
+    --interactive \
+    --tty \
+    towinok/purpurmain:latest
+  ```
+    - ```/path/to/purpur_data``` Заменить на локальный путь к папке хранения данных на хосте.
+    - ```VERSION: "1.20.1"``` Заменить ```1.20.1``` на интересующую вас версию.
+
+- Простой запуск через docker-compose для версии minecraft 1.20.1
+  ```yml
+  version: "3"
   
-```yml
-docker run -d \
-  --name purpur \
-  --restart always \
-  -v /path/to/purpur_data:/data:rw \
-  -p 25565:25565/tcp \
-  --interactive \
-  --tty \
-  towinok/purpurmain:latest
-```
-  - ```/path/to/purpur_data``` Заменить на локальный путь к папке хранения данных на хосте.
-
-```yml
-version: "3"
-
-services:
-  minecraft:
-    image: "towinok/purpur-server:latest"
-    restart: always
-    container_name: "purpur"
-    volumes:
-      - "/path/to/purpur_data:/data:rw"
-    ports:
-      - "25565:25565/tcp"
-    stdin_open: true
-    tty: true
-```
-  - ```/path/to/purpur_data``` Заменить на локальный путь к папке хранения данных на хосте.
+  services:
+    minecraft:
+      image: "towinok/purpur-server:latest"
+      restart: always
+      container_name: "purpur"
+      environment:
+        VERSION: "1.20.1"
+      volumes:
+        - "/path/to/purpur_data:/data:rw"
+      ports:
+        - "25565:25565/tcp"
+      stdin_open: true
+      tty: true
+  ```
+    - ```/path/to/purpur_data``` Заменить на локальный путь к папке хранения данных на хосте.
+    - ```VERSION: "1.20.1"``` Заменить ```1.20.1``` на интересующуюинтересующую вас версию.
 ## Доступные Environments
 - ```VERSION``` Версия Minecraft/PurpurMC сервера.
   - Default ARG: ```1.20.1```
@@ -83,5 +90,7 @@ services:
     - ```./config/pufferfish.yml --purpur-settings ``` ./config => конфигураций Pufferfish
     - ```-C ./config/commands.yml``` ./config => конфигурационный файл для создания алиасов команд (не рекомендуется к настройке).
     - ```-S ./config/spigot.yml``` ./config => Конфигурация Spigot
-    - ```-b ./config/bukkit.yml``` ./config => Конфигурация bukkit
+    - ```-b ./config/bukkit.yml``` ./config => Конфигурация Bukkit
+
+
   
