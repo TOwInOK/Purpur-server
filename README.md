@@ -29,7 +29,7 @@
 
 - Интернет-соединение: Для загрузки конфигураций и ресурсов, Docker Compose также требует интернет-соединения.
 
-## Как использоать
+## Как использовать
 
 - Установить [Docker](https://docs.docker.com/engine/install/)
 - Установить [Docker Compose](https://docs.docker.com/compose/install/) (по желанию)
