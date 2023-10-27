@@ -7,6 +7,7 @@ RUN apk update && \
 LABEL Minecraft PurpurMC server
 
 ARG version=1.20.1
+ENV VERSION=${version}
 
 WORKDIR /opt/minecraft
 COPY ./getminecraft.sh /
