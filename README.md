@@ -119,7 +119,13 @@ docker-compose exec SERVICE_NAME /bin/sh
 ```bash
 docker ps
 ```
-
+### Прикладной материал
+- Основные команды для пользования Docker [[EN](https://docs.docker.com/engine/reference/commandline/cli/)]
+- Базовое использование Docker-compose [[EN](https://docs.docker.com/compose/reference/)]
+- Сравнение и полезная информация о флагах для minecraft [[EN](https://github.com/brucethemoose/Minecraft-Performance-Flags-Benchmarks)]
+- Почему Aikar's флаг хороши [[EN](https://docs.papermc.io/paper/aikars-flags)]
+- Кратко об ZGC [[EN](https://github.com/1ByteBit/ZGC-For-Minecraft)]
+- OpenJDK wiki ZGC [[EN](https://wiki.openjdk.org/display/zgc/Main)]
 # Что в разработке?
 - Алиасы для docker
 - Выбор из ядер для скачивания
