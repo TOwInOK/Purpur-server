@@ -51,6 +51,7 @@ ENV MEMORYSIZE=${memory_size}
 
 # Pufferfish flag
 ARG puffer_flags="--add-modules=jdk.incubator.vector"
+ARG PUFFER_FLAGS=${puffer_flags}
 
 # ZGC by default
 ARG java_flags="-Djava.awt.headless=true -Dterminal.jline=false -Dterminal.ansi=true -XX:+UseZGC -XX:MaxGCPauseMillis=16 -XX:ActiveProcessorCount=8 -XX:+UseNUMA -XX:+AlwaysPreTouch -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled -XX:+PerfDisableSharedMem -XX:InitiatingHeapOccupancyPercent=20 -Dcom.mojang.eula.agree=true"
