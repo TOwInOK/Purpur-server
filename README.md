@@ -76,9 +76,9 @@
   - Default ARG: ```1G```
 - ```PUFFER_FLAGS``` Стандартный флаг который используется по умолчанию, не требует написания и повторного использования.
   - Default ARG ```--add-modules=jdk.incubator.vector```. При желании можно поставить ```""``` в значение и он работать перестанет, тогда Pufferfish не будет работать как надо.
-- ```JAVAFLAGS``` Дополнительные флаги Java, используемые для настройки Java виртуальной машины.
+- ```JAVAFLAGS``` Дополнительные флаги Java (ZGC), используемые для настройки Java виртуальной машины.
   - Default ARG для 8 ядер 16 потоков и >=12G GB ОЗУ:
-    ```yml
+    ```yml 
     -Djava.awt.headless=true -Dterminal.jline=false -Dterminal.ansi=true -XX:+UseZGC -XX:MaxGCPauseMillis=16 -XX:ActiveProcessorCount=8 -XX:+UseNUMA -XX:+AlwaysPreTouch -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled XX:+PerfDisableSharedMem -XX:InitiatingHeapOccupancyPercent=20 -Dcom.mojang.eula.agree=true
     ```
   - ПРЕДУПРЕЖДЕНИЕ! Если у вас меньше 12 гб, то прошу использовать флаги от [Aikar](https://flags.sh)
