@@ -1,123 +1,47 @@
-# Minecraft Purpur Server Docker Image
+# Minecraft(Purpur) server via Docker
+Данный контейнер позволяет вам запустить minecraft на ядре Purpur версии 1.20.1 или любой иной версии ядра, которой вы захотите, если она будет в репозитрии Purpur.
 
-This Docker image allows you to run a Minecraft Purpur server into Docker container.
+# Что надо для запуска
 
-## Build
+## 1. Docker:
+### Операционная система:
+- Linux: Docker поддерживает большинство распространенных дистрибутивов Linux, таких как Ubuntu, Debian, CentOS и другие.
+- Windows: Docker поддерживает Windows 10 Pro, Enterprise или Education (64-бит) с включенной подсистемой Windows для Linux (WSL 2).
+- macOS: Docker поддерживает macOS 10.13 и выше с установленным Docker Desktop.
 
-To build the Docker image, you can use the following command:
+### Процессор:
+64-битный процессор с виртуализацией включенной в BIOS/UEFI.
 
-```bash
-version: "3"
+### Память (RAM):
+Рекомендуется не менее 6 ГБ оперативной памяти.
+Для минимального запуска/тестирования рекомендуется 1 ГБ оперативной памяти.
 
-services:
-  minecraft:
-    image: "towinok/purpur-server:latest"
-    restart: always
-    container_name: "purpur"
-    environment:
-      MEMORYSIZE: "12G"
-#ZGC by default :)
-      JAVAFLAGS: >
-        -Djava.awt.headless=true
-        -Dterminal.jline=false
-        -Dterminal.ansi=true
-        -XX:+UseZGC
-        -XX:ConcGCThreads=8
-        -XX:MaxGCPauseMillis=20
-        -XX:ActiveProcessorCount=8
-        -XX:+UseNUMA
-        -XX:+AlwaysPreTouch
-        -XX:+UseStringDeduplication
-        -XX:+ParallelRefProcEnabled
-        -XX:+PerfDisableSharedMem
-        -XX:InitiatingHeapOccupancyPercent=20
-        -Dcom.mojang.eula.agree=true
+### Хранилище:
+Свободное место на диске для установки Docker и контейнеров.
+Рекомендуется не менее 12 гб дискового пространства.
 
-    #if you need
-    cpus: 8.0
-    #if you need
-    #MEMORYSIZE*1.20
-    mem_limit: 14746M
-    volumes:
-      - "/path/to/purpur_data:/data:rw"
-    ports:
-      - "25565:25565/tcp"
-    stdin_open: true
-    tty: true
+### Интернет-соединение:
+Для загрузки образов контейнеров и других ресурсов.
 
-# if you use it
-    depends_on:
-      - purpur_db
-      - purpur_adminer
-    #if you use db
-    healthcheck:
-      test: ["CMD-SHELL", "nc -z -v -w5 purpur_db 3306"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+## Docker Compose (по желанию):
+- Установленный Docker: Docker Compose требует установленного Docker на хост-системе.
+- Python: Docker Compose написан на языке Python, поэтому требуется наличие Python на вашей системе.
 
-# Define purpur_db and purpur_adminer services here
+- Интернет-соединение: Для загрузки конфигураций и ресурсов, Docker Compose также требует интернет-соединения.
+
+## Как использоать
+
+- Простой запуск через docker
+  
+```yml
+docker run -d \
+  --name purpur \
+  --restart always \
+  -v /path/to/purpur_data:/data:rw \
+  -p 25565:25565/tcp \
+  --interactive \
+  --tty \
+  towinok/purpurmain:latest
 ```
-## if you don'y like ZGC
-```bash
-# AIKAR G1
-      JAVAFLAGS: >
-         -Dterminal.jline=false
-         -Dterminal.ansi=true
-         -XX:+UseG1GC
-         -XX:+ParallelRefProcEnabled
-         -XX:MaxGCPauseMillis=170
-         -XX:+UnlockExperimentalVMOptions
-         -XX:+DisableExplicitGC
-         -XX:+AlwaysPreTouch
-         -XX:G1HeapWastePercent=5
-         -XX:G1MixedGCCountTarget=4
-         -XX:G1MixedGCLiveThresholdPercent=90
-         -XX:G1RSetUpdatingPauseTimePercent=5
-         -XX:SurvivorRatio=32
-         -XX:+PerfDisableSharedMem
-         -XX:MaxTenuringThreshold=1
-         -XX:G1NewSizePercent=50
-         -XX:G1MaxNewSizePercent=50
-         -XX:G1HeapRegionSize=32M
-         -XX:G1ReservePercent=15
-         -XX:InitiatingHeapOccupancyPercent=20 # Задаем процент начальной занятости кучи
-         -Dusing.aikars.flags=https://mcflags.emc.gs
-         -Daikars.new.flags=true
-         -Dcom.mojang.eula.agree=true # Соглашаемся с лицензией Mojang
-```
-
-
-## Example db with adminer
-```bash
-db:
-    container_name: "purpur_db"
-    image: "lscr.io/linuxserver/mariadb:latest"
-    restart: always
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=""
-      - MYSQL_ROOT_PASSWORD=myrootpassword
-      - MYSQL_USER=mydbuser
-      - MYSQL_PASSWORD=mydbpassword
-    volumes:
-      - "/path/to/db_data:/config"
-    ports:
-      - "3306:3306"
-    cpus: 1.0
-    mem_limit: 1844M
-      
-  adminer:
-    container_name: "purpur_adminer"
-    image: "adminer"
-    restart: always
-    ports:
-      - "25555:8080"
-    cpus: 0.5
-    mem_limit: 820M
-    depends_on:
-      - db
-```
-
+  - ```/path/to/purpur_data``` Заменить на локальный путь к папке хранения данных на хосте.
 
