@@ -1,7 +1,7 @@
 # Build stage
 FROM eclipse-temurin:19-jre-alpine AS build
 RUN apk update && \
-    apk add curl jq && \
+    apk add curl jq libstdc++ && \
     rm -rf /var/cache/apk/*
 
 LABEL Minecraft PurpurMC server
