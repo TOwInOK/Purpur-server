@@ -24,5 +24,5 @@ fi
 
 export HOME=/home/$DOCKER_USER
 
-exec gosu $DOCKER_USER:$DOCKER_GROUP java --$PUFFER_FLAGS -jar -Xms$MEMORYSIZE -Xmx$MEMORYSIZE $JAVAFLAGS /opt/minecraft/purpur.jar $ADD_FLAGS nogui
+exec gosu $DOCKER_USER:$DOCKER_GROUP java $PUFFER_FLAGS -jar -Xms$MEMORYSIZE -Xmx$MEMORYSIZE $JAVAFLAGS /opt/minecraft/purpur.jar $ADD_FLAGS nogui
  
