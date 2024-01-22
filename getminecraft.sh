@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-PURPUR_VERSION=$1
+PURPUR_VERSION=${VERSION}
 
 # Retrieve the latest build number
 LATEST_BUILD=$(curl -s "https://api.purpurmc.org/v2/purpur/${PURPUR_VERSION}/" | jq -r '.builds.latest')
