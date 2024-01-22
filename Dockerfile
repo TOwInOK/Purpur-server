@@ -1,10 +1,7 @@
 # Build stage
 FROM eclipse-temurin:19-jre-alpine AS build
 RUN apk update && \
-    apk add curl && \
-    apk add jq && \
-    apk add libstdc++ && \
-    rm -rf /var/cache/apk/*
+    apk add --no-cache curl jq
 
 LABEL Minecraft PurpurMC server
 
@@ -22,8 +19,8 @@ FROM eclipse-temurin:19-jre-alpine AS runtime
 ARG TARGETARCH
 # Download and copy the gosu binary for arm64
 RUN set -eux; \
-    apk add --no-cache curl && \
-    curl -sL https://github.com/tianon/gosu/releases/download/1.16/gosu-amd64 -o /usr/local/bin/gosu && \
+    apk add --no-cache curl libstdc++ && \
+    curl -sL https://github.com/tianon/gosu/releases/download/1.17/gosu-amd64 -o /usr/local/bin/gosu && \
     chmod +x /usr/local/bin/gosu && \
     gosu nobody true
 
