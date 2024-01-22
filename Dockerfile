@@ -5,7 +5,7 @@ RUN apk update && \
 
 LABEL Minecraft PurpurMC server
 
-ARG version=1.20.1
+ARG version=1.20.4
 ENV VERSION=${version}
 
 WORKDIR /opt/minecraft
@@ -20,7 +20,7 @@ ARG TARGETARCH
 # Download and copy the gosu binary for arm64
 RUN set -eux; \
     apk add --no-cache curl libstdc++ && \
-    curl -sL https://github.com/tianon/gosu/releases/download/1.16/gosu-amd64 -o /usr/local/bin/gosu && \
+    curl -sL https://github.com/tianon/gosu/releases/download/1.17/gosu-amd64 -o /usr/local/bin/gosu && \
     chmod +x /usr/local/bin/gosu && \
     gosu nobody true
 
