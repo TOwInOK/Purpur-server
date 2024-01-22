@@ -1,13 +1,13 @@
 name: Build and Publish Docker Image
 
 on:
-  push:
-    branches:
-      - main
-
+ push:
+   branches: [ main ]
+   
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+    
     steps:
     - name: Checkout repo
       uses: actions/checkout@v4
@@ -21,7 +21,7 @@ jobs:
         username: ${{DOCKER_HUB_USERNAME}}
         password: ${{ secrets.D_TOCKEN }}
 
-    - name: Push image to 
+    - name: Push image to Docker Hub
       run: |
         docker push ${{DOCKER_HUB_USERNAME}}/purpurmain:latest
         
