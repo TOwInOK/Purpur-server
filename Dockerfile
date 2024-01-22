@@ -11,7 +11,7 @@ ENV VERSION=${version}
 WORKDIR /opt/minecraft
 COPY ./getminecraft.sh /
 RUN chmod +x /getminecraft.sh
-RUN /getminecraft.sh $version
+RUN /getminecraft.sh
 
 
 #Running environment
