@@ -1,10 +1,19 @@
-# Build stage
-FROM eclipse-temurin:19-jre-alpine AS build
-RUN apk update && \
-    apk add --no-cache curl jq
+#Running environment
+FROM eclipse-temurin:19-jre-alpine
+ARG TARGETARCH
 
+# Download and copy the gosu binary for arm64
+RUN set -eux; \
+    apk add --no-cache curl libstdc++ jq&& \
+    curl -sL https://github.com/tianon/gosu/releases/download/1.17/gosu-amd64 -o /usr/local/bin/gosu && \
+    chmod +x /usr/local/bin/gosu && \
+    gosu nobody true
+
+
+#Download minecraft
 LABEL Minecraft PurpurMC server
 
+#default value
 ARG version=1.20.4
 ENV VERSION=${version}
 
@@ -12,17 +21,6 @@ WORKDIR /opt/minecraft
 COPY ./getminecraft.sh /
 RUN chmod +x /getminecraft.sh
 RUN /getminecraft.sh
-
-
-#Running environment
-FROM eclipse-temurin:19-jre-alpine AS runtime
-ARG TARGETARCH
-# Download and copy the gosu binary for arm64
-RUN set -eux; \
-    apk add --no-cache curl libstdc++ && \
-    curl -sL https://github.com/tianon/gosu/releases/download/1.17/gosu-amd64 -o /usr/local/bin/gosu && \
-    chmod +x /usr/local/bin/gosu && \
-    gosu nobody true
 
 # Working directory
 WORKDIR /data
