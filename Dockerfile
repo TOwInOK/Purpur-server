@@ -4,11 +4,10 @@ ARG TARGETARCH
 
 # Download and copy the gosu binary for arm64
 RUN set -eux; \
-    apk add --no-cache curl libstdc++ jq&& \
+    apk add --no-cache curl libstdc++ jq && \
     curl -sL https://github.com/tianon/gosu/releases/download/1.17/gosu-amd64 -o /usr/local/bin/gosu && \
     chmod +x /usr/local/bin/gosu && \
     gosu nobody true
-
 
 #Download minecraft
 LABEL Minecraft PurpurMC server
